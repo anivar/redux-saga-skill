@@ -1,6 +1,6 @@
 # Redux-Saga Skill
 
-A Claude Code skill for writing, testing, and debugging Redux-Saga code with modern best practices.
+An AI agent skill for writing, testing, and debugging Redux-Saga code with modern best practices.
 
 ## What's Inside
 
@@ -38,7 +38,7 @@ npx skills add https://github.com/anivar/redux-saga-skill --skill redux-saga-tes
 ## Structure
 
 ```
-├── SKILL.md                          # Entry point for Claude
+├── SKILL.md                          # Entry point for AI agents
 ├── AGENTS.md                         # Compiled guide for agents
 ├── rules/                            # Individual rules (Incorrect→Correct)
 │   ├── effect-*                      # Effects & yielding (CRITICAL)
