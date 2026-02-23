@@ -6,20 +6,26 @@ A Claude Code skill for writing, testing, and debugging Redux-Saga code with mod
 
 - **22 rules** with incorrect→correct code examples across 7 categories
 - **7 deep-dive references** covering the full redux-saga API, fork model, channels, recipes, and troubleshooting
-- **Standalone testing sub-skill** for redux-saga-test-plan (expectSaga, testSaga, providers, matchers)
+- **Testing coverage** for redux-saga-test-plan (expectSaga, testSaga, providers, matchers) with Jest and Vitest
 - **Anti-patterns** reference with 12 common mistakes
 - **Redux Toolkit integration** guidance (configureStore, createSlice, when to use saga vs RTK Query)
 
 ## Install
 
 ```bash
-npx @anthropic-ai/claude-code skills add anivar/redux-saga-skill
+npx skills add anivar/redux-saga-skill -g
 ```
 
-### Testing skill (standalone)
+Or with full URL:
 
 ```bash
-npx @anthropic-ai/claude-code skills add anivar/redux-saga-skill/redux-saga-testing
+npx skills add https://github.com/anivar/redux-saga-skill
+```
+
+Testing sub-skill only:
+
+```bash
+npx skills add https://github.com/anivar/redux-saga-skill --skill redux-saga-testing
 ```
 
 ## Baseline
