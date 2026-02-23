@@ -22,12 +22,6 @@ Or with full URL:
 npx skills add https://github.com/anivar/redux-saga-skill
 ```
 
-Testing sub-skill only:
-
-```bash
-npx skills add https://github.com/anivar/redux-saga-skill --skill redux-saga-testing
-```
-
 ## Baseline
 
 - redux-saga ^1.4.2
@@ -57,12 +51,11 @@ npx skills add https://github.com/anivar/redux-saga-skill --skill redux-saga-tes
 │   ├── recipes.md
 │   ├── anti-patterns.md
 │   └── troubleshooting.md
-└── redux-saga-testing/              # Standalone testing skill
-    ├── SKILL.md
-    └── references/
-        ├── api-reference.md
-        └── anti-patterns.md
 ```
+
+## Related
+
+- [redux-saga-testing](https://github.com/anivar/redux-saga-testing) — Standalone testing skill for redux-saga-test-plan
 
 ## License
 
