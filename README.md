@@ -2,13 +2,13 @@
 
 An AI agent skill for writing, testing, and debugging Redux-Saga code with modern best practices.
 
-## What's Inside
+## The Problem
 
-- **22 rules** with incorrect→correct code examples across 7 categories
-- **7 deep-dive references** covering the full redux-saga API, fork model, channels, recipes, and troubleshooting
-- **Testing coverage** for redux-saga-test-plan (expectSaga, testSaga, providers, matchers) with Jest and Vitest
-- **Anti-patterns** reference with 12 common mistakes
-- **Redux Toolkit integration** guidance (configureStore, createSlice, when to use saga vs RTK Query)
+AI agents often generate outdated or incorrect redux-saga code — missing `yield` on effects, calling async functions directly instead of using `call()`, using `fork` inside `race`, or setting up root sagas that crash entirely when one watcher fails. These are subtle bugs that pass linting but break at runtime.
+
+## This Solution
+
+22 rules with incorrect→correct code examples that teach agents the actual redux-saga API behavior, fork model semantics, and modern Redux Toolkit integration patterns. Each rule targets a specific mistake and shows exactly how to fix it.
 
 ## Install
 
@@ -26,14 +26,46 @@ npx skills add https://github.com/anivar/redux-saga-skill
 
 - redux-saga ^1.4.2
 - @reduxjs/toolkit (recommended)
-- redux-saga-test-plan ^5.x (for testing skill)
+- redux-saga-test-plan ^5.x (for testing rules)
 - Jest or Vitest
+
+## What's Inside
+
+### 22 Rules Across 7 Categories
+
+| Priority | Category | Rules | Impact |
+|----------|----------|-------|--------|
+| 1 | Effects & Yielding | 5 | CRITICAL |
+| 2 | Fork Model & Concurrency | 4 | CRITICAL |
+| 3 | Error Handling | 2 | HIGH |
+| 4 | Testing Patterns | 4 | HIGH |
+| 5 | Recipes & Patterns | 3 | MEDIUM |
+| 6 | Channels & External I/O | 2 | MEDIUM |
+| 7 | RTK Integration | 2 | MEDIUM |
+
+Each rule file contains:
+- Why it matters
+- Incorrect code with explanation
+- Correct code with explanation
+- Decision tables and additional context
+
+### 7 Deep-Dive References
+
+| Reference | Covers |
+|-----------|--------|
+| `effects-and-api.md` | All effect creators, blocking vs non-blocking, pattern matching |
+| `fork-model.md` | Attached vs detached forks, error propagation, cancellation semantics |
+| `testing.md` | expectSaga, testSaga, providers, matchers, reducer integration |
+| `channels.md` | eventChannel, actionChannel, buffers, worker pools |
+| `recipes.md` | Throttle, debounce, retry, polling, optimistic updates, batching |
+| `anti-patterns.md` | 12 common mistakes with BAD/GOOD examples |
+| `troubleshooting.md` | Frozen apps, missed actions, bad stack traces, TypeScript yield types |
 
 ## Structure
 
 ```
 ├── SKILL.md                          # Entry point for AI agents
-├── AGENTS.md                         # Compiled guide for agents
+├── AGENTS.md                         # Compiled guide with all rules expanded
 ├── rules/                            # Individual rules (Incorrect→Correct)
 │   ├── effect-*                      # Effects & yielding (CRITICAL)
 │   ├── fork-*                        # Fork model & concurrency (CRITICAL)
@@ -43,19 +75,19 @@ npx skills add https://github.com/anivar/redux-saga-skill
 │   ├── channel-*                     # Channels & external I/O (MEDIUM)
 │   ├── rtk-*                         # Redux Toolkit integration (MEDIUM)
 │   └── troubleshoot-*               # Debugging (LOW)
-├── references/                       # Deep-dive reference docs
-│   ├── effects-and-api.md
-│   ├── fork-model.md
-│   ├── testing.md
-│   ├── channels.md
-│   ├── recipes.md
-│   ├── anti-patterns.md
-│   └── troubleshooting.md
+└── references/                       # Deep-dive reference docs
+    ├── effects-and-api.md
+    ├── fork-model.md
+    ├── testing.md
+    ├── channels.md
+    ├── recipes.md
+    ├── anti-patterns.md
+    └── troubleshooting.md
 ```
 
 ## Related
 
-- [redux-saga-testing](https://github.com/anivar/redux-saga-testing) — Standalone testing skill for redux-saga-test-plan
+- [redux-saga-testing](https://github.com/anivar/redux-saga-testing) — Standalone testing skill for redux-saga-test-plan (`npx skills add anivar/redux-saga-testing -g`)
 
 ## License
 
