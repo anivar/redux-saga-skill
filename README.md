@@ -1,5 +1,7 @@
 # Redux-Saga Skill
 
+Created by **[Anivar Aravind](https://anivar.net)**
+
 An AI agent skill for writing, testing, and debugging Redux-Saga code with modern best practices.
 
 ## The Problem
@@ -85,9 +87,30 @@ Each rule file contains:
     └── troubleshooting.md
 ```
 
-## Related
+## Ecosystem — Skills by [Anivar Aravind](https://anivar.net)
 
-- [redux-saga-testing](https://github.com/anivar/redux-saga-testing) — Standalone testing skill for redux-saga-test-plan (`npx skills add anivar/redux-saga-testing -g`)
+### Testing Skills
+| Skill | What it covers | Install |
+|-------|---------------|---------|
+| [jest-skill](https://github.com/anivar/jest-skill) | Jest best practices — mock design, async testing, matchers, timers, snapshots | `npx skills add anivar/jest-skill -g` |
+| [redux-saga-testing](https://github.com/anivar/redux-saga-testing) | Redux-Saga testing — expectSaga, testSaga, providers | `npx skills add anivar/redux-saga-testing -g` |
+| [zod-testing](https://github.com/anivar/zod-testing) | Zod schema testing — safeParse, mock data, property-based | `npx skills add anivar/zod-testing -g` |
+| [msw-skill](https://github.com/anivar/msw-skill) | MSW 2.0 API mocking — handlers, responses, GraphQL | `npx skills add anivar/msw-skill -g` |
+
+### Library & Framework Skills
+| Skill | What it covers | Install |
+|-------|---------------|---------|
+| [zod-skill](https://github.com/anivar/zod-skill) | Zod v4 schema validation, parsing, error handling | `npx skills add anivar/zod-skill -g` |
+| [msw-skill](https://github.com/anivar/msw-skill) | MSW 2.0 handlers, responses, migration | `npx skills add anivar/msw-skill -g` |
+
+### Engineering Analysis
+| Skill | What it covers | Install |
+|-------|---------------|---------|
+| [contributor-codebase-analyzer](https://github.com/anivar/contributor-codebase-analyzer) | Code analysis, annual reviews, promotion readiness | `npx skills add anivar/contributor-codebase-analyzer -g` |
+
+## Author
+
+**[Anivar Aravind](https://anivar.net)** — Building AI agent skills for modern JavaScript/TypeScript development.
 
 ## License
 
