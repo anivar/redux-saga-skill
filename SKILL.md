@@ -13,7 +13,8 @@ user-invocable: false
 agentic: false
 compatibility: "JavaScript/TypeScript projects using redux-saga ^1.4.2 with Redux Toolkit"
 metadata:
-  author: anivar
+  author: Anivar Aravind
+  author_url: https://anivar.net
   version: 1.0.0
   tags: redux-saga, redux, redux-toolkit, side-effects, generators, middleware, async, channels, testing
 ---
