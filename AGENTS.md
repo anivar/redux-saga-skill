@@ -2,7 +2,7 @@
 
 > This document is for AI agents and LLMs to follow when writing, reviewing, or debugging redux-saga code. It compiles all rules and references into a single executable guide.
 
-**Baseline:** redux-saga 1.4.2 with Redux Toolkit (`configureStore`)
+**Baseline:** redux-saga 1.5.1 with Redux Toolkit (`configureStore`)
 
 ---
 
@@ -58,7 +58,7 @@ const user = yield api.fetchUser(id)
 const user = yield call(api.fetchUser, id)
 ```
 
-`call()` returns `{ CALL: { fn, args } }` — a plain object the middleware executes. Tests use `deepEqual` instead of mocks.
+`call()` returns a plain object describing the call — an instruction the middleware executes, not the call itself. Tests use `deepEqual` against the same effect creator instead of mocks.
 
 ### Rule: Choose the Right Watcher
 
@@ -107,10 +107,12 @@ const user = yield call(api.fetchUser, id)
 
 `take`, `takeEvery`, `takeLatest`, `takeLeading`, `throttle`, `debounce` accept:
 
-- `'*'` or omitted — all actions
+- `'*'` — all actions (only `take`/`takeMaybe` may omit the argument entirely)
 - `'ACTION_TYPE'` — exact match
 - `[type1, type2]` — any in array
 - `fn => boolean` — custom predicate
+
+For `takeEvery`, `takeLatest`, `takeLeading`, `throttle`, and `debounce` the pattern is a required parameter; use `'*'` for a catch-all watcher. Taking from a `multicastChannel` also requires a pattern: `take(chan, '*')`, not `take(chan)`.
 
 ---
 
@@ -327,18 +329,21 @@ export default function* rootSaga() {
 ```javascript
 function createSocketChannel(socket) {
   return eventChannel((emit) => {
-    socket.on('message', emit)
+    // sanitize: never emit null/undefined; prefer `{ data }` over a bare primitive
+    socket.on('message', (data) => { if (data != null) emit({ data }) })
     socket.on('close', () => emit(END))
     return () => socket.close()
   })
 }
 ```
 
+Two contract points the docs are explicit about. The subscriber must "sanitize your event sources as to not pass null or undefined through the event channel" — structure the data "like your redux actions. `{ number }` over `number`." And messages on an `eventChannel` are **not buffered by default**: "if not provided, messages will not be buffered on this channel", so anything emitted while no taker is registered is lost. Pass a buffer when every message matters. `channel()` differs — it queues up to 10 by default — and `actionChannel` buffers without limit.
+
 ### Buffer Types
 
 | Buffer | On Overflow |
 |--------|------------|
-| `buffers.none()` | Drops |
+| `buffers.none()` (eventChannel default) | Drops |
 | `buffers.fixed(n)` | Throws |
 | `buffers.expanding(n)` | Grows |
 | `buffers.dropping(n)` | Drops newest |
@@ -357,9 +362,10 @@ runSaga({ channel, dispatch, getState }, mySaga)
 
 - **Login flow:** `fork` auth + `take(['LOGOUT', 'LOGIN_ERROR'])` + `cancel`
 - **Polling:** `while(true)` + `call` + `delay` in a forked task, cancel on `STOP`
-- **Optimistic update:** `put(optimistic)` + `race({ undo: take('UNDO'), commit: delay(5000) })`
+- **Optimistic update:** `put(optimistic)` + `race({ undo: take('UNDO'), commit: delay(5000) })`, started with `spawn` so cancellation can't strand the UI between revert and commit
 - **Pagination:** `take('LOAD_MORE')` in a loop, track page/hasMore
-- **Batching:** `actionChannel` + `flush` on interval
+- **Batching outgoing side effects:** `actionChannel` + `flush` on interval
+- **Batching dispatched actions:** wrap `stdChannel().put` to unwrap `redux-batched-actions`' `BATCH` envelope, then `createSagaMiddleware({ channel })` — without it, watchers never see batched actions
 - **Timeout wrapper:** `race({ result: call(saga), timeout: delay(ms) })`
 - **Parallel loading:** `yield all([call(a), call(b), call(c)])`
 
@@ -417,6 +423,7 @@ yield put(fetchUsersSuccess(users))
 | Missed actions | Saga blocked on `call` | Use `fork` to stay responsive |
 | Bad stack traces | Async generators | `onError` with `sagaStack`, `babel-plugin-redux-saga` |
 | Saga doesn't start | `run()` before store | Call `run()` after `configureStore` |
+| Undefined reaches a saga | Event source emitted `null`/`undefined` into an `eventChannel` | Sanitize at the emit site; emit `{ data }`, not a bare primitive |
 | `yield` returns `any` (TS) | TS can't infer generators | Type manually or use `typed-redux-saga` |
 | Effect not executing | Missing `yield` before effect | `yield put(action)` not `put(action)` |
 
@@ -424,7 +431,7 @@ yield put(fetchUsersSuccess(users))
 
 ## Prerequisites
 
-- `redux-saga` ^1.4.2
+- `redux-saga` ^1.5.1
 - `@reduxjs/toolkit` (recommended)
 - `redux-saga-test-plan` (for testing)
 - Node.js with ES2015 generator support (all modern runtimes)

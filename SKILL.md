@@ -5,17 +5,17 @@ description: >
   testing, and debugging generator-based side-effect middleware in Redux
   applications. Covers effect creators, fork model, channels, testing
   with redux-saga-test-plan, concurrency, cancellation, and modern
-  Redux Toolkit integration. Baseline: redux-saga 1.4.2.
+  Redux Toolkit integration. Baseline: redux-saga 1.5.1.
   Triggers on: saga files, redux-saga imports, generator-based middleware,
   mentions of "saga", "takeEvery", "takeLatest", "fork model", or "channels".
 license: MIT
 user-invocable: false
 agentic: false
-compatibility: "JavaScript/TypeScript projects using redux-saga ^1.4.2 with Redux Toolkit"
+compatibility: "JavaScript/TypeScript projects using redux-saga ^1.5.1 with Redux Toolkit"
 metadata:
   author: Anivar Aravind
   author_url: https://anivar.net
-  version: 1.0.0
+  version: 1.1.0
   tags: redux-saga, redux, redux-toolkit, side-effects, generators, middleware, async, channels, testing
 ---
 
@@ -125,10 +125,16 @@ Sagas are for **workflow orchestration** — complex async flows with concurrenc
 
 | Pattern | Matches |
 |---------|---------|
-| `'*'` or omitted | All actions |
+| `'*'` | All actions |
 | `'ACTION_TYPE'` | Exact `action.type` match |
 | `[type1, type2]` | Any type in array |
 | `fn => boolean` | Custom predicate |
+
+Only `take`/`takeMaybe` may omit the argument entirely — `take()` matches all actions. For
+`takeEvery`, `takeLatest`, `takeLeading`, `throttle`, and `debounce` the pattern is a required
+parameter; use `'*'` for a catch-all watcher.
+
+Taking from a `multicastChannel` also requires a pattern: `take(chan, '*')`, not `take(chan)`.
 
 ## How to Use
 

@@ -63,6 +63,18 @@ function* fetchWithBackoff(fn, ...args) {
 ## Undo Pattern
 
 ```javascript
+import { take, put, call, race, delay, spawn } from 'redux-saga/effects'
+
+function* watchArchive() {
+  while (true) {
+    const action = yield take('ARCHIVE_THREAD')
+    // spawn, not fork/takeLatest: the optimistic update has already been applied, so the
+    // task must survive parent cancellation to reach either the revert or the API commit.
+    // Otherwise client and server diverge.
+    yield spawn(archiveThread, action)
+  }
+}
+
 function* archiveThread(action) {
   yield put(showUndoToast())
   yield put(optimisticallyArchive(action.threadId))

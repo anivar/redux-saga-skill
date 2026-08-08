@@ -88,19 +88,32 @@ import { call } from 'typed-redux-saga'
 const user = yield* call(api.fetchUser, id) // properly typed
 ```
 
-## "Saga was provided undefined action" Warning
+## Undefined Reaches a Saga Through a Channel
 
-**Cause:** Action creator returns undefined instead of an action object.
+**Cause:** An event source emitted `null` or `undefined` into an `eventChannel`. The docs make
+sanitizing the source the subscriber's job: "You need to sanitize your event sources as to not
+pass null or undefined through the event channel. While it's fine to pass numbers through, we'd
+recommend structuring your event channel data like your redux actions. `{ number }` over
+`number`."
 
-**Fix:** Verify your action creators return `{ type: string, payload?: any }`.
+**Fix:** Guard at the emit site, not at the taker, and give the channel action-shaped payloads
+rather than bare primitives:
+
+```javascript
+// BUG: forwards whatever the source produces
+socket.on('message', (data) => emit(data))
+
+// FIX
+socket.on('message', (data) => { if (data != null) emit({ data }) })
+```
 
 ## Effect Not Executing
 
 **Cause:** Using effect creator result without yielding it.
 
 ```javascript
-// BUG: creates effect object but doesn't execute it
-put(myAction()) // returns { PUT: { action } } — never dispatched
+// BUG: creates a plain effect object describing the dispatch, nothing more
+put(myAction()) // never dispatched — the middleware only runs effects that are yielded
 
 // FIX
 yield put(myAction())

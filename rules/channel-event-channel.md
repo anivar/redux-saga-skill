@@ -30,7 +30,11 @@ import { take, put, call } from 'redux-saga/effects'
 
 function createSocketChannel(socket) {
   return eventChannel((emit) => {
-    socket.on('message', (data) => emit(data))
+    // Sanitize the source: never emit null or undefined, and prefer
+    // action-shaped data (`{ data }`) over a bare primitive.
+    socket.on('message', (data) => {
+      if (data != null) emit({ data })
+    })
     socket.on('close', () => emit(END)) // closes the channel
 
     // Return unsubscribe function
@@ -44,7 +48,7 @@ function* watchSocket() {
 
   try {
     while (true) {
-      const data = yield take(channel)
+      const { data } = yield take(channel)
       yield put(messageReceived(data))
     }
   } finally {
@@ -53,7 +57,16 @@ function* watchSocket() {
 }
 ```
 
-## With Buffer
+The subscriber contract has two halves. It must return an unsubscribe function — and it must
+sanitize what it emits: "You need to sanitize your event sources as to not pass null or
+undefined through the event channel. While it's fine to pass numbers through, we'd recommend
+structuring your event channel data like your redux actions. `{ number }` over `number`."
+
+## Choosing a Buffer (the default is none — messages drop)
+
+Not an optional enhancement: an `eventChannel` created without a buffer argument does not buffer
+at all, and any message emitted while no taker is registered is lost. Decide before shipping
+whether that is acceptable.
 
 ```javascript
 import { buffers } from 'redux-saga'
@@ -66,7 +79,7 @@ const channel = eventChannel(subscribe, buffers.sliding(10))
 
 | Buffer | Behavior |
 |--------|----------|
-| `buffers.none()` | Drops messages when no taker |
+| `buffers.none()` (default) | Drops messages when no taker |
 | `buffers.fixed(n)` | Fixed queue, errors on overflow |
 | `buffers.expanding(n)` | Grows dynamically |
 | `buffers.dropping(n)` | Drops new messages on overflow |

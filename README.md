@@ -26,9 +26,9 @@ npx skills add https://github.com/anivar/redux-saga-skill
 
 ## Baseline
 
-- redux-saga ^1.4.2
+- redux-saga ^1.5.1
 - @reduxjs/toolkit (recommended)
-- redux-saga-test-plan ^5.x (for testing rules)
+- redux-saga-test-plan ^4.0.6 (for testing rules)
 - Jest or Vitest
 
 ## What's Inside

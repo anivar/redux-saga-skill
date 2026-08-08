@@ -33,7 +33,9 @@ import { eventChannel, END } from 'redux-saga'
 
 function createSocketChannel(socket) {
   return eventChannel((emit) => {
-    socket.on('message', (data) => emit(data))
+    // Never emit null/undefined — sanitize the source, and prefer
+    // action-shaped payloads (`{ data }`) over bare primitives.
+    socket.on('message', (data) => { if (data != null) emit({ data }) })
     socket.on('error', (err) => emit({ error: err }))
     socket.on('close', () => emit(END))
     return () => socket.close()
@@ -48,7 +50,7 @@ function* watchSocket(socket) {
       if (payload.error) {
         yield put(socketError(payload.error))
       } else {
-        yield put(messageReceived(payload))
+        yield put(messageReceived(payload.data))
       }
     }
   } finally {
@@ -56,6 +58,26 @@ function* watchSocket(socket) {
   }
 }
 ```
+
+**Sanitize the event source.** The docs are explicit: "You need to sanitize your event sources
+as to not pass null or undefined through the event channel. While it's fine to pass numbers
+through, we'd recommend structuring your event channel data like your redux actions.
+`{ number }` over `number`." Guard the emit rather than the taker.
+
+**`eventChannel` is not buffered by default.** The `buffer` argument is optional and, per the
+API docs, "if not provided, messages will not be buffered on this channel" — anything emitted
+while no taker is registered is lost. In the loop above every effect between two takes is
+synchronous, so the saga re-enters `take` in the same tick and nothing is dropped. Add any
+async effect between takes (`yield call(api.save, payload)`, `yield delay(...)`) and messages
+arriving in that window are gone. Pass a buffer when every message matters:
+
+```javascript
+const channel = eventChannel(subscribe, buffers.expanding(10))
+```
+
+The other two factories behave differently: `channel()` "will queue incoming messages up to 10
+until interested takers are registered", and `actionChannel` "buffers all incoming messages
+without limit".
 
 ### channel — Generic Saga-to-Saga Communication
 
@@ -90,12 +112,31 @@ function* rootSaga() {
 
 Each message is delivered to all takers, not just one.
 
+`take` on a multicast channel requires a second `pattern` argument: "using `take` with the
+`multicastChannel` requires us to pass the additional argument *pattern* — that you can use to
+filter the actions to `take`." Unlike `actionChannel`/`eventChannel`/`channel`, the one-argument
+form `take(chan)` fails at runtime here. Use `'*'` to receive everything.
+
 ```javascript
 import { multicastChannel } from 'redux-saga'
 
+function* workerA(chan) {
+  while (true) {
+    const payload = yield take(chan, '*') // pattern is REQUIRED here
+    yield call(handleA, payload)
+  }
+}
+
+function* workerB(chan) {
+  while (true) {
+    const payload = yield take(chan, 'BROADCAST') // or filter by type
+    yield call(handleB, payload)
+  }
+}
+
 function* root() {
   const chan = yield call(multicastChannel)
-  yield fork(workerA, chan) // both receive every message
+  yield fork(workerA, chan) // both receive every matching message
   yield fork(workerB, chan)
   yield put(chan, { type: 'BROADCAST' })
 }
@@ -106,7 +147,8 @@ function* root() {
 ```javascript
 import { buffers } from 'redux-saga'
 
-// No buffer: drops messages when no taker
+// No buffer (what an eventChannel does when no buffer argument is passed):
+// drops messages when no taker
 eventChannel(sub, buffers.none())
 
 // Fixed buffer: errors if queue exceeds limit
@@ -124,7 +166,7 @@ eventChannel(sub, buffers.sliding(10))
 
 | Buffer | On Overflow | Use When |
 |--------|------------|----------|
-| `none()` | Drops message | Fire-and-forget events |
+| `none()` (eventChannel default) | Drops message | Fire-and-forget events |
 | `fixed(n)` | Throws error | Must process all, overflow is a bug |
 | `expanding(n)` | Grows | Must process all, variable load |
 | `dropping(n)` | Drops newest | Latest data not critical |

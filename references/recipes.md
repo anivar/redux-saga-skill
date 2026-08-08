@@ -72,6 +72,16 @@ function* watchPoll() {
 ## Optimistic Updates with Undo
 
 ```javascript
+function* watchDelete() {
+  while (true) {
+    const action = yield take('DELETE_ITEM')
+    // spawn, not fork/takeLatest: the optimistic update has already been applied, so the
+    // task must survive parent cancellation to reach either the revert or the API commit.
+    // Otherwise client and server diverge.
+    yield spawn(deleteSaga, action)
+  }
+}
+
 function* deleteSaga(action) {
   const { itemId } = action.payload
 
@@ -91,6 +101,12 @@ function* deleteSaga(action) {
   }
 }
 ```
+
+Upstream wires its own version of this recipe the same way, and says why: `spawn` runs the worker
+"in a non-blocking fashion, which also prevents cancellation when main saga gets cancelled. This
+helps us in keeping state in sync between server and client." Under `takeLatest`, a second
+`DELETE_ITEM` cancels the first worker mid-`race` after `removeItem` has already dispatched, so
+neither `restoreItem` nor `api.deleteItem` runs and the two sides diverge permanently.
 
 ## Pagination / Infinite Scroll
 
@@ -145,7 +161,7 @@ function* fetchWithDedup(action) {
 }
 ```
 
-## Batching Actions
+## Batching Outgoing Side Effects
 
 Process multiple buffered actions as a single batch:
 
@@ -162,6 +178,33 @@ function* batchProcessor() {
   }
 }
 ```
+
+## Batching Dispatched Actions
+
+`redux` "does not support the ability to dispatch multiple actions and only call the reducer
+once"; `redux-batched-actions` wraps them in a `BATCH` envelope. Sagas do not see the inner
+actions unless you unwrap them at the middleware channel:
+
+```javascript
+import createSagaMiddleware, { stdChannel } from 'redux-saga'
+import { BATCH } from 'redux-batched-actions'
+
+const channel = stdChannel()
+const rawPut = channel.put
+channel.put = (action) => {
+  if (action.type === BATCH) {
+    action.payload.forEach(rawPut)
+    return
+  }
+  rawPut(action)
+}
+
+const sagaMiddleware = createSagaMiddleware({ channel })
+```
+
+Pass that middleware to `configureStore` as usual (see `rules/rtk-configure-store.md`). Without
+the wrapper, `take`/`takeEvery` watchers silently stop firing for any batched action — the
+reducer still runs, so the store updates and only the sagas go quiet.
 
 ## Parallel Data Loading
 

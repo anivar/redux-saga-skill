@@ -40,7 +40,8 @@ function* fetchUserSaga(action) {
 
 ## Why
 
-`call()` returns a plain object `{ CALL: { fn, args } }` that the middleware executes. This enables:
+`call()` returns a plain object describing the call — an instruction the middleware executes, not
+the call itself. This enables:
 - **Testability** — assert with `deepEqual(gen.next().value, call(api.fetchUser, id))`
 - **Cancellation** — middleware can cancel the pending call
 - **Consistency** — all side effects flow through the middleware

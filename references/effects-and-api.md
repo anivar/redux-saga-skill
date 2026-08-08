@@ -53,6 +53,10 @@ const action = yield take(action => action.type.startsWith('USER_'))
 const action = yield take('*')
 ```
 
+`take()` with no argument matches all actions. `take(channel)` takes from a channel instead of
+the store; a `multicastChannel` is the exception there — it requires an explicit pattern,
+`take(chan, '*')` rather than `take(chan)`.
+
 `takeMaybe(pattern)` — same but receives `END` object instead of auto-terminating.
 
 ### takeEvery(pattern, saga, ...args)
