@@ -60,6 +60,9 @@ const result = yield race({
 ## Key Rules
 
 - All effects in `race` should be **blocking** (`call`, `take`, `delay`, `join`)
+- Never race a non-blocking effect. `select` and `flush` resolve synchronously,
+  so `race({ data: select(sel), timeout: delay(5000) })` settles immediately with
+  `data` — the timeout can never win, and the race is silently pointless
 - The first to resolve wins; all others are **automatically cancelled**
 - Array form: `yield race([call(a), delay(5000)])` — returns `[result, undefined]`
 - Object form (preferred): named keys make intent clear

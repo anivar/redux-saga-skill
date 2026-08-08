@@ -90,16 +90,16 @@ const user = yield call(api.fetchUser, id)
 | `join(task)` | Yes | Wait for task |
 | `cancel(task)` | No | Cancel task |
 | `cancel()` | No | Self-cancel |
-| `select(selector)` | Yes | Query store state |
+| `select(selector)` | No | Query store state |
 | `actionChannel(pattern)` | No | Buffer actions |
-| `flush(channel)` | Yes | Drain buffered messages |
+| `flush(channel)` | No | Drain buffered messages |
 | `cancelled()` | Yes | Check cancellation in `finally` |
 | `delay(ms)` | Yes | Pause execution |
 | `throttle(ms, pattern, saga)` | No | Rate-limit |
 | `debounce(ms, pattern, saga)` | No | Wait for silence |
 | `retry(n, delay, fn)` | Yes | Retry with backoff |
 | `race(effects)` | Yes | First wins |
-| `all([effects])` | Yes | Parallel, wait all |
+| `all([effects])` | If any child blocks | Parallel, wait all |
 | `setContext(props)` | No | Update context |
 | `getContext(prop)` | Yes | Read context |
 

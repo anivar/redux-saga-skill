@@ -280,10 +280,16 @@ If any effect rejects, remaining effects are cancelled and the error is thrown.
 
 ### throttle(ms, pattern, saga, ...args)
 
-Spawn saga on matching action, then ignore further actions for `ms` milliseconds.
+Spawn saga on a matching action, then hold off spawning again for `ms`
+milliseconds. Actions arriving inside that window are not discarded: the most
+recent one is buffered and spawns a trailing invocation once the window elapses.
+So a burst produces a leading call plus one trailing call with the latest action
+— at most one spawn per `ms`, but usually two per burst rather than one.
 
 ```javascript
 yield throttle(500, 'SCROLL_EVENT', handleScroll)
+// SCROLL_EVENT at t=0 and t=100 -> handleScroll runs twice:
+// once at t=0 with the first action, once at t=500 with the second.
 ```
 
 ### debounce(ms, pattern, saga, ...args)
@@ -330,6 +336,12 @@ const task = runSaga(
 |------------------------|------------------------------|
 | take, takeMaybe | takeEvery, takeLatest, takeLeading |
 | call, apply, cps | put, fork, spawn, cancel |
-| join, select, flush | actionChannel, throttle, debounce |
+| join | select, flush, actionChannel, throttle, debounce |
 | cancelled, delay, retry | setContext |
-| race, all | |
+| race | |
+
+`all` blocks only if the array or object it is given contains a blocking effect.
+
+`select` and `flush` resolve synchronously, so neither ever suspends the
+generator — and neither is usable inside `race`. A race whose only other arm is
+`select` settles immediately and the other branches never run.

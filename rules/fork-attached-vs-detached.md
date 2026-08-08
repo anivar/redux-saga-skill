@@ -37,11 +37,14 @@ function* checkoutFlow() {
   yield spawn(trackAnalytics) // detached — fire and forget
 }
 
-// Attached: token refresh is cancelled when auth flow ends
+// Attached: token refresh must be cancelled explicitly
 function* authFlow() {
   const task = yield fork(refreshTokenLoop)
   yield take('LOGOUT')
-  yield cancel(task) // explicit cancel — or automatic when parent ends
+  // Required. A parent whose own body finishes WAITS for its attached forks —
+  // it does not cancel them. Without this, refreshTokenLoop's `while (true)`
+  // keeps authFlow alive forever.
+  yield cancel(task)
 }
 ```
 
@@ -51,5 +54,6 @@ function* authFlow() {
 |---|---|---|
 | Parent waits for child | Yes | No |
 | Child error crashes parent | Yes | No |
-| Parent cancel cancels child | Yes | No |
+| Parent *cancelled* cancels child | Yes | No |
+| Parent's own body finishing cancels child | No — it waits | No |
 | Use when | Child is part of the workflow | Child is independent/optional |
