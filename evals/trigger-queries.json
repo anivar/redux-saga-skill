@@ -1,0 +1,66 @@
+[
+  {
+    "query": "the search saga fires a request on every keystroke and old results overwrite new ones",
+    "should_trigger": true
+  },
+  {
+    "query": "after logout the notifications polling keeps hitting /notifications. we use redux-saga. how do I stop it",
+    "should_trigger": true
+  },
+  {
+    "query": "wire a websocket into the redux store, side effects already run through sagas",
+    "should_trigger": true
+  },
+  {
+    "query": "refactor sagas/checkout.ts, it forks everything and one error kills the root saga",
+    "should_trigger": true
+  },
+  {
+    "query": "move from createStore to Redux Toolkit's configureStore without dropping our sagas",
+    "should_trigger": true
+  },
+  {
+    "query": "why does my takeEvery worker run twice for one dispatch",
+    "should_trigger": true
+  },
+  {
+    "query": "add retry with backoff to the fetchMenu saga",
+    "should_trigger": true
+  },
+  {
+    "query": "review sagas/order.ts for leaks",
+    "should_trigger": true
+  },
+  {
+    "query": "should we use RTK Query or keep thunks for data fetching",
+    "should_trigger": false
+  },
+  {
+    "query": "write a redux-observable epic for the autocomplete",
+    "should_trigger": false
+  },
+  {
+    "query": "write a createAsyncThunk that fetches orders",
+    "should_trigger": false
+  },
+  {
+    "query": "implement the saga pattern for a distributed transaction across the order and payment services",
+    "should_trigger": false
+  },
+  {
+    "query": "build a zustand store for the cart",
+    "should_trigger": false
+  },
+  {
+    "query": "python generators: how does yield from work",
+    "should_trigger": false
+  },
+  {
+    "query": "cancel the fetch in a useEffect cleanup when the component unmounts",
+    "should_trigger": false
+  },
+  {
+    "query": "temporal workflow with compensation steps for a failed payment",
+    "should_trigger": false
+  }
+]

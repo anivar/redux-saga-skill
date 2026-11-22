@@ -6,6 +6,16 @@ tags: troubleshooting, debugging, freeze, missed-actions, stack-traces, common-e
 
 # Troubleshooting
 
+## Contents
+
+- App Freezes After Adding a Saga
+- Saga Misses Dispatched Actions
+- Unreadable Error Stack Traces
+- Saga Doesn't Start
+- TypeScript: yield Returns `any`
+- Undefined Reaches a Saga Through a Channel
+- Effect Not Executing
+
 ## App Freezes After Adding a Saga
 
 **Cause:** Missing `yield` before an effect in a loop.

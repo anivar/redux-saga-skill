@@ -6,6 +6,15 @@ tags: effects, api, call, put, take, fork, spawn, select, race, all
 
 # Effects and API Reference
 
+## Contents
+
+- Middleware Setup
+- Effect Creators — Detailed
+- Effect Combinators
+- Concurrency Helpers
+- runSaga(options, saga, ...args)
+- Blocking vs Non-Blocking
+
 ## Middleware Setup
 
 ```javascript

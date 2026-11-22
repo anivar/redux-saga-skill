@@ -2,6 +2,16 @@
 
 All notable changes to this skill are documented here.
 
+## 1.1.1 — 2026-11-22
+
+Audited against **redux-saga 1.5.1**, as in 1.1.0. Frontmatter and navigation only; no rule changes.
+
+### Changed
+
+- The description says when to load the skill: any file that imports redux-saga, and a saga to write, debug or refactor, even when the user only describes a race, a leak, a missed action or a request that never cancels.
+- The frontmatter carries only the fields of the Agent Skills specification. `user-invocable: false` and `agentic: false` are removed: `agentic` is not a field of the specification, and claude.ai and the Skills API refuse a skill whose frontmatter has a key outside the specification. In Claude Code, `/redux-saga` now loads the skill by hand.
+- Each reference file over 100 lines opens with a contents list, so a partial read still shows what the file covers.
+
 ## 1.1.0 — 2026-08-08
 
 Audited against **redux-saga 1.5.1** (npm `latest`, released 2026-07-26) and the official

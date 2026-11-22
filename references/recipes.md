@@ -6,6 +6,18 @@ tags: recipes, throttle, debounce, retry, undo, batching, login-flow, polling
 
 # Recipes and Common Patterns
 
+## Contents
+
+- Login / Logout Flow
+- Polling
+- Optimistic Updates with Undo
+- Pagination / Infinite Scroll
+- Request Deduplication
+- Batching Outgoing Side Effects
+- Batching Dispatched Actions
+- Parallel Data Loading
+- Timeout Wrapper
+
 ## Login / Logout Flow
 
 Non-blocking auth with cancellation support:

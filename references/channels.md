@@ -6,6 +6,13 @@ tags: channels, eventChannel, actionChannel, multicast, websocket, external-io, 
 
 # Channels and External I/O
 
+## Contents
+
+- Channel Types
+- Buffer Strategies
+- flush — Drain a Channel
+- runSaga — Connect to External I/O
+
 ## Channel Types
 
 ### actionChannel — Buffer Redux Actions

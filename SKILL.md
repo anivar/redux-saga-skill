@@ -1,21 +1,19 @@
 ---
 name: redux-saga
 description: >
-  Redux-Saga best practices, patterns, and API guidance for building,
-  testing, and debugging generator-based side-effect middleware in Redux
-  applications. Covers effect creators, fork model, channels, testing
-  with redux-saga-test-plan, concurrency, cancellation, and modern
-  Redux Toolkit integration. Baseline: redux-saga 1.5.1.
-  Triggers on: saga files, redux-saga imports, generator-based middleware,
-  mentions of "saga", "takeEvery", "takeLatest", "fork model", or "channels".
+  Redux-Saga 1.x rules for generator-based side effects in Redux apps: effect creators, takeEvery,
+  takeLatest and takeLeading, fork and spawn, cancellation, channels and eventChannel, error
+  handling, testing with redux-saga-test-plan, and Redux Toolkit integration. Baseline: redux-saga
+  1.5.1. Use this skill whenever code imports redux-saga or the user writes, debugs or refactors a
+  saga, even if they only describe a race, a leak, a missed action or a request that never cancels
+  in a saga-based app. Triggers on: function* sagas, redux-saga/effects, takeEvery, takeLatest,
+  call, put, select, fork, race, all, eventChannel, actionChannel, "saga", "fork model", "channels".
 license: MIT
-user-invocable: false
-agentic: false
 compatibility: "JavaScript/TypeScript projects using redux-saga ^1.5.1 with Redux Toolkit"
 metadata:
   author: Anivar Aravind
   author_url: https://anivar.net
-  version: 1.1.0
+  version: 1.1.1
   tags: redux-saga, redux, redux-toolkit, side-effects, generators, middleware, async, channels, testing
 ---
 
